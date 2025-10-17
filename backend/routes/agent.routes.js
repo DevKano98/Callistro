@@ -5,5 +5,6 @@ const { optionalAuth } = require('../middleware/auth.middleware');
 
 router.post('/create', optionalAuth, agentController.createAgent);
 router.get('/', optionalAuth, agentController.getAgents);
+router.delete('/:agentId', optionalAuth, agentController.deleteAgent);
 
 module.exports = router;

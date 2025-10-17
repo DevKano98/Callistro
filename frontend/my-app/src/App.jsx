@@ -10,6 +10,7 @@ import SentimentInsights from './pages/SentimentInsights';
 import SettingsPage from './pages/SettingsPage';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
+import LandingPage from './pages/LandingPage';
 
 function ProtectedRoute({ children }) {
   const { user } = useStore();
@@ -18,6 +19,13 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   const { user } = useStore();
+  // Debug: log auth state and current location to help diagnose navigation resets
+  try {
+    const loc = window?.location?.pathname;
+    console.debug('[App] render user:', user, 'location:', loc);
+  } catch {
+    // ignore
+  }
 
   return (
     <BrowserRouter>
@@ -44,8 +52,9 @@ export default function App() {
         </div>
       ) : (
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/auth" element={<AuthPage />} />
-          <Route path="*" element={<Navigate to="/auth" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       )}
     </BrowserRouter>

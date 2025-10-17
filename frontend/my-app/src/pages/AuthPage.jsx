@@ -15,11 +15,26 @@ export default function AuthPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
+      // Validate email format
+      if (!email || !email.includes('@')) {
+        alert('Please enter a valid email address');
+        setLoading(false);
+        return;
+      }
+      
+      // Validate password
+      if (!password || password.length < 6) {
+        alert('Password must be at least 6 characters');
+        setLoading(false);
+        return;
+      }
+      
       if (DEVELOPMENT_MODE) {
         // Development mode: Mock login
         console.log('🔧 Dev mode login:', email);
-        setUser({ uid: 'dev-user-' + Date.now(), email: email || 'dev@example.com' });
+        setUser({ uid: 'dev-user-' + Date.now(), email });
         return;
       }
 
@@ -31,7 +46,27 @@ export default function AuthPage() {
       }
     } catch (err) {
       console.error('Auth error:', err);
-      alert('Authentication failed: ' + err.message + '\n\nℹ️ To bypass Firebase, add VITE_DEV_MODE=true to your .env file');
+      
+      let errorMessage = 'Authentication failed: ';
+      
+      if (err.code === 'auth/invalid-email') {
+        errorMessage += 'Invalid email format';
+      } else if (err.code === 'auth/email-already-in-use') {
+        errorMessage += 'Email already registered. Try signing in instead.';
+      } else if (err.code === 'auth/weak-password') {
+        errorMessage += 'Password should be at least 6 characters';
+      } else if (err.code === 'auth/user-not-found') {
+        errorMessage += 'No account found with this email';
+      } else if (err.code === 'auth/wrong-password') {
+        errorMessage += 'Incorrect password';
+      } else {
+        errorMessage += err.message;
+      }
+      
+      errorMessage += '\n\n💡 Tip: Enable Email/Password auth in Firebase Console';
+      errorMessage += '\n   Or use Development Mode (see README)';
+      
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -39,56 +74,75 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="bg-surface p-8 rounded-lg w-full max-w-md border border-surface-light">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-1">
+      <div className="w-full max-w-md space-y-8 px-4">
+        {/* Logo and Heading */}
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900 tracking-tight">
             Callisto
           </h1>
-          <p className="text-sm text-text-muted">
-            {isLogin ? 'Sign in to your account' : 'Create a new account'}
+          <p className="mt-3 text-lg text-gray-600">
+            {isLogin ? 'Welcome back!' : 'Get started for free'}
           </p>
         </div>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-white mb-2">Email address</label>
-            <input
-              type="email"
-              placeholder="name@company.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 bg-background rounded-md border border-surface-light focus:border-primary focus:outline-none text-white text-sm"
-              required
-            />
-          </div>
+
+        {/* Auth Card */}
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email address
+              </label>
+              <input
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary-light focus:ring-opacity-20 text-gray-900 text-sm transition-colors"
+                required
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary-light focus:ring-opacity-20 text-gray-900 text-sm transition-colors"
+                required
+              />
+            </div>
+            
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="w-full py-3 text-base font-medium rounded-lg shadow-sm hover:shadow transition-all duration-200"
+            >
+              {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
+            </Button>
+          </form>
           
-          <div>
-            <label className="block text-sm font-medium text-white mb-2">Password</label>
-            <input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 bg-background rounded-md border border-surface-light focus:border-primary focus:outline-none text-white text-sm"
-              required
-            />
+          <div className="mt-6 text-center">
+            <span className="text-gray-500">
+              {isLogin ? "Don't have an account? " : 'Already have an account? '}
+            </span>
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-primary hover:text-primary-hover font-medium transition-colors"
+            >
+              {isLogin ? 'Sign up' : 'Sign in'}
+            </button>
           </div>
-          
-          <Button type="submit" disabled={loading} className="w-full mt-6">
-            {loading ? 'Please wait...' : isLogin ? 'Sign In' : 'Create Account'}
-          </Button>
-        </form>
-        
-        <div className="mt-6 text-center text-sm">
-          <span className="text-text-muted">
-            {isLogin ? "Don't have an account? " : 'Already have an account? '}
-          </span>
-          <button
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-primary hover:underline font-medium"
-          >
-            {isLogin ? 'Sign up' : 'Sign in'}
-          </button>
+        </div>
+
+        {/* Footer Links */}
+        <div className="text-center text-sm text-gray-500 space-x-4">
+          <a href="#" className="hover:text-gray-900 transition-colors">Privacy Policy</a>
+          <span>•</span>
+          <a href="#" className="hover:text-gray-900 transition-colors">Terms of Service</a>
         </div>
       </div>
     </div>

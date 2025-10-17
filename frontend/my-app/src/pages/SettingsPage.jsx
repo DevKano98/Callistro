@@ -47,18 +47,18 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-white">Settings</h1>
-        <p className="text-sm text-text-muted mt-1">Configure your AI voice preferences</p>
+        <h1 className="text-2xl font-semibold text-[var(--color-text)]">Settings</h1>
+        <p className="text-sm text-[var(--color-text-secondary)] mt-1">Configure your AI voice preferences</p>
       </div>
       
       <Card className="p-6">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-white mb-2">Voice Type</label>
+            <label className="block text-sm font-medium text-[var(--color-text)] mb-2">Voice Type</label>
             <select
               value={voice}
               onChange={(e) => setVoice(e.target.value)}
-              className="w-full px-3 py-2 bg-background rounded-md border border-surface-light focus:border-primary focus:outline-none text-white text-sm"
+              className="w-full px-3 py-2 bg-[var(--color-surface)] rounded-md border border-[var(--color-border)] focus:border-[var(--color-primary)] focus:outline-none text-[var(--color-text)] text-sm"
             >
               <option value="female">Female</option>
               <option value="male">Male</option>
@@ -66,8 +66,8 @@ export default function SettingsPage() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-white mb-2">
-              Voice Pitch: <span className="text-primary">{pitch.toFixed(1)}</span>
+            <label className="block text-sm font-medium text-[var(--color-text)] mb-2">
+              Voice Pitch: <span className="text-[var(--color-primary)]">{pitch.toFixed(1)}</span>
             </label>
             <input
               type="range"
@@ -78,7 +78,7 @@ export default function SettingsPage() {
               onChange={(e) => setPitch(parseFloat(e.target.value))}
               className="w-full h-2 bg-surface-light rounded-lg appearance-none cursor-pointer accent-primary"
             />
-            <div className="flex justify-between text-xs text-text-muted mt-1">
+            <div className="flex justify-between text-xs text-[var(--color-text-secondary)] mt-1">
               <span>Lower (0.5)</span>
               <span>Normal (1.0)</span>
               <span>Higher (2.0)</span>

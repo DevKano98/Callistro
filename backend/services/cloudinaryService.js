@@ -141,9 +141,41 @@ async function processTwilioRecording(recordingUrl, callSid, recordingSid) {
   }
 }
 
+/**
+ * Delete a recording from Cloudinary by its public ID
+ * @param {string} publicId - Cloudinary public ID of the recording
+ * @returns {Promise<boolean>} - True if deletion was successful
+ */
+async function deleteRecording(publicId) {
+  if (!cloudinaryConfigured) {
+    console.warn('⚠️ Cannot delete recording - Cloudinary not configured');
+    return false;
+  }
+
+  try {
+    console.log(`☁️ Deleting from Cloudinary: ${publicId}`);
+    
+    const result = await new Promise((resolve, reject) => {
+      cloudinary.uploader.destroy(publicId, {
+        resource_type: 'video'
+      }, (error, result) => {
+        if (error) reject(error);
+        else resolve(result);
+      });
+    });
+
+    console.log(`✅ Deleted from Cloudinary:`, result);
+    return true;
+  } catch (error) {
+    console.error('❌ Cloudinary deletion failed:', error.message);
+    throw error;
+  }
+}
+
 module.exports = {
   downloadTwilioRecording,
   uploadToCloudinary,
   processTwilioRecording,
+  deleteRecording,
   isConfigured: () => cloudinaryConfigured
 };

@@ -41,6 +41,15 @@ const updateDocument = async (collection, id, data) => {
   }
 };
 
+const deleteDocument = async (collection, id) => {
+  try {
+    await db.collection(collection).doc(id).delete();
+  } catch (error) {
+    console.error(`Error deleting document ${id} from ${collection}:`, error);
+    throw error;
+  }
+};
+
 const getDocuments = async (collection, field, value) => {
   try {
     const snapshot = await db.collection(collection).where(field, '==', value).get();
@@ -84,6 +93,7 @@ module.exports = {
   addDocument,
   getDocument,
   updateDocument,
+  deleteDocument,
   getDocuments,
   getAllDocuments,
   uploadFile,

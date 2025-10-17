@@ -11,11 +11,13 @@ export const API_ENDPOINTS = {
   // Agent endpoints
   CREATE_AGENT: `${API_BASE_URL}/api/agent/create`,
   GET_AGENTS: `${API_BASE_URL}/api/agent`,
+  DELETE_AGENT: `${API_BASE_URL}/api/agent`,  // DELETE /:agentId will be appended
   
   // Call endpoints
   UPLOAD_CSV: `${API_BASE_URL}/api/call/upload-csv`,
   START_CALLS: `${API_BASE_URL}/api/call/start-calls`,
   GET_CALLS: `${API_BASE_URL}/api/call`,
+  DELETE_CALL: `${API_BASE_URL}/api/call/delete`,
   GET_DASHBOARD_STATS: `${API_BASE_URL}/api/call/dashboard`,
   
   // Transcript endpoints

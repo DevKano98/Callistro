@@ -11,6 +11,8 @@ router.post('/start-calls', optionalAuth, callController.startCalls);
 router.get('/dashboard', optionalAuth, callController.getDashboardStats);
 router.get('/debug', optionalAuth, callController.debugCalls);
 router.get('/', optionalAuth, callController.getCalls);
+router.post('/delete', optionalAuth, callController.deleteCall);
+router.delete('/delete/:callId', optionalAuth, callController.deleteCall);
 
 // TwiML and speech handling
 router.get('/twiml/:callId', callController.getTwiML);

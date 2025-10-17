@@ -509,6 +509,54 @@ const debugCalls = async (req, res) => {
   }
 };
 
+// Delete a call record (accepts callId in body or params)
+const deleteCall = async (req, res) => {
+  try {
+    const callId = req.params.callId || req.body.callId;
+    
+    if (!callId) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Call ID is required' 
+      });
+    }
+
+    // Get the call record first
+    const call = await firebaseService.getDocument('calls', callId);
+    if (!call) {
+      return res.status(404).json({
+        success: false,
+        message: 'Call not found'
+      });
+    }
+
+    // If there's a recording stored in Cloudinary, delete it
+    if (call.cloudinaryPublicId) {
+      try {
+        await cloudinaryService.deleteRecording(call.cloudinaryPublicId);
+      } catch (error) {
+        console.error('Error deleting recording from Cloudinary:', error);
+        // Continue with call deletion even if recording deletion fails
+      }
+    }
+
+    // Delete the call document from Firestore
+    await firebaseService.deleteDocument('calls', callId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Call deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting call:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting call',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   uploadCSV,
   startCalls,
@@ -518,5 +566,6 @@ module.exports = {
   handleRecordingStatus,
   getCalls,
   getDashboardStats,
-  debugCalls
+  debugCalls,
+  deleteCall
 };
